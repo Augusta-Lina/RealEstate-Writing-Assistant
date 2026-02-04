@@ -1,0 +1,23 @@
+# AI Writing Assistant - Python Dependencies
+# ==========================================
+# Install these with: pip install -r requirements.txt
+
+# FastAPI - The web framework for building our API
+# Think of it as the foundation of our backend
+fastapi==0.109.2
+
+# Uvicorn - The server that runs our FastAPI app
+# It handles incoming HTTP requests and routes them to our code
+uvicorn[standard]==0.27.1
+
+# Anthropic - Official SDK for Claude AI
+# This makes it easy to call Claude's API
+anthropic==0.49.0
+
+# Pydantic - Data validation library
+# FastAPI uses this to validate request/response data
+pydantic==2.6.1
+
+# Python-dotenv - Loads environment variables from .env files
+# Essential for keeping API keys out of your code!
+python-dotenv==1.0.1
