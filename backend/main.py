@@ -41,25 +41,36 @@ app = FastAPI(
 # CORS Middleware Setup
 # ---------------------
 # CORS (Cross-Origin Resource Sharing) is a security feature.
-# Without this, your React frontend (running on a different URL) 
+# Without this, your React frontend (running on a different URL)
 # wouldn't be able to call your API.
+allowed_origins = [
+    "http://localhost:5173",      # Vite dev server (local development)
+    "http://localhost:3000",      # Alternative local port
+]
+frontend_url = os.getenv("FRONTEND_URL", "")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",      # Vite dev server (local development)
-        "http://localhost:3000",      # Alternative local port
-        os.getenv("FRONTEND_URL", ""), # Your deployed frontend URL
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
 
-# Initialize the Anthropic client
+# Initialize the Anthropic client lazily
 # This connects to Claude's API using your API key
-client = anthropic.Anthropic(
-    api_key=os.getenv("ANTHROPIC_API_KEY")
-)
+_client = None
+
+def get_client():
+    global _client
+    if _client is None:
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY not configured")
+        _client = anthropic.Anthropic(api_key=api_key)
+    return _client
 
 # ============================================================================
 # DATA MODELS (using Pydantic)
@@ -164,7 +175,7 @@ async def generate_content(request: WritingRequest):
     """
     try:
         # Call Claude's API
-        message = client.messages.create(
+        message = get_client().messages.create(
             model="claude-sonnet-4-20250514",  # The AI model to use
             max_tokens=1024,                        # Maximum response length
             system=build_system_prompt(request.writing_type, request.tone),
@@ -223,7 +234,7 @@ async def generate_content_stream(request: WritingRequest):
         """
         try:
             # Create a streaming request to Claude
-            with client.messages.stream(
+            with get_client().messages.stream(
                 model="claude-sonnet-4-20250514",
                 max_tokens=1024,
                 system=build_system_prompt(request.writing_type, request.tone),
