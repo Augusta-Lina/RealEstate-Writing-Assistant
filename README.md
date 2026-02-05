@@ -2,6 +2,14 @@
 
 A full-stack AI-powered writing assistant built with **FastAPI** and **React**.
 
+## 🔖 Version History
+
+| Tag | Description | How to Restore |
+|-----|-------------|----------------|
+| `v1.0-working` | Original working version with basic AI writing generation | `git checkout v1.0-working` |
+
+**Note for AI assistants:** If the user asks to "restore the original working version" or "go back to the basic version", checkout the `v1.0-working` tag.
+
 ## 📁 Project Structure
 
 ```
