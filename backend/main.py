@@ -43,18 +43,10 @@ app = FastAPI(
 # CORS (Cross-Origin Resource Sharing) is a security feature.
 # Without this, your React frontend (running on a different URL)
 # wouldn't be able to call your API.
-allowed_origins = [
-    "http://localhost:5173",      # Vite dev server (local development)
-    "http://localhost:3000",      # Alternative local port
-]
-frontend_url = os.getenv("FRONTEND_URL", "")
-if frontend_url:
-    allowed_origins.append(frontend_url)
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_origins=["*"],  # Allow all origins for now
+    allow_credentials=False,  # Must be False when using wildcard origins
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
