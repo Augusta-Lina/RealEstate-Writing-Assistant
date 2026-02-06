@@ -189,117 +189,136 @@ function App() {
 
   return (
     <div className="app">
+      {/* Ambient Background Glow */}
+      <div className="ambient-glow top-right"></div>
+      <div className="ambient-glow bottom-left"></div>
+
       <header className="header">
-        <h1>Real Estate Listing Assistant</h1>
-        <p>Generate professional listing descriptions in seconds</p>
+        <div className="header-brand">
+          <div className="header-logo">✦</div>
+          <div className="header-text">
+            <h1>Listing Generator</h1>
+            <p>Draft your property narrative with AI-assisted precision</p>
+          </div>
+        </div>
+        <span className="header-badge">Active Workspace</span>
       </header>
 
       <main className="main-content">
         {/* Left Column - Form */}
         <div className="form-column">
+          <p className="form-hint">All fields are optional — fill in as much or as little as you like.</p>
           <form onSubmit={handleGenerate} className="property-form">
-            {/* Property Type & Purpose */}
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="propertyType">Property Type</label>
-                <select
-                  id="propertyType"
-                  value={propertyType}
-                  onChange={(e) => setPropertyType(e.target.value)}
-                >
-                  {PROPERTY_TYPES.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
+            {/* Property Details Section */}
+            <div className="form-section">
+              <div className="form-section-label">
+                <span className="form-section-icon">&#9670;</span>
+                Property Details
               </div>
 
-              <div className="form-group">
-                <label>Listing Purpose</label>
-                <div className="toggle-group">
-                  <button
-                    type="button"
-                    className={`toggle-btn ${listingPurpose === 'sale' ? 'active' : ''}`}
-                    onClick={() => setListingPurpose('sale')}
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="propertyType">Property Type</label>
+                  <select
+                    id="propertyType"
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
                   >
-                    For Sale
-                  </button>
-                  <button
-                    type="button"
-                    className={`toggle-btn ${listingPurpose === 'rent' ? 'active' : ''}`}
-                    onClick={() => setListingPurpose('rent')}
-                  >
-                    For Rent
-                  </button>
+                    {PROPERTY_TYPES.map(type => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Listing Purpose</label>
+                  <div className="toggle-group">
+                    <button
+                      type="button"
+                      className={`toggle-btn ${listingPurpose === 'sale' ? 'active' : ''}`}
+                      onClick={() => setListingPurpose('sale')}
+                    >
+                      For Sale
+                    </button>
+                    <button
+                      type="button"
+                      className={`toggle-btn ${listingPurpose === 'rent' ? 'active' : ''}`}
+                      onClick={() => setListingPurpose('rent')}
+                    >
+                      For Rent
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              <div className="form-row four-col">
+                <div className="form-group">
+                  <label htmlFor="bedrooms">Beds</label>
+                  <input
+                    type="number"
+                    id="bedrooms"
+                    min="0"
+                    max="10"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="bathrooms">Baths</label>
+                  <input
+                    type="number"
+                    id="bathrooms"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    value={bathrooms}
+                    onChange={(e) => setBathrooms(e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="sqft">Size (sqft)</label>
+                  <input
+                    type="number"
+                    id="sqft"
+                    min="0"
+                    value={sqft}
+                    onChange={(e) => setSqft(e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="price">Price</label>
+                  <input
+                    type="number"
+                    id="price"
+                    min="0"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="$"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="address">Address or Neighborhood</label>
+                <input
+                  type="text"
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="e.g., 123 Main St, Austin TX or 'Downtown Seattle'"
+                />
+              </div>
             </div>
 
-            {/* Property Details */}
-            <div className="form-row four-col">
-              <div className="form-group">
-                <label htmlFor="bedrooms">Beds</label>
-                <input
-                  type="number"
-                  id="bedrooms"
-                  min="0"
-                  max="10"
-                  value={bedrooms}
-                  onChange={(e) => setBedrooms(e.target.value)}
-                  placeholder="0"
-                />
+            {/* Features Section */}
+            <div className="form-section">
+              <div className="form-section-label">
+                <span className="form-section-icon">&#9733;</span>
+                Standout Features
               </div>
-              <div className="form-group">
-                <label htmlFor="bathrooms">Baths</label>
-                <input
-                  type="number"
-                  id="bathrooms"
-                  min="0"
-                  max="10"
-                  step="0.5"
-                  value={bathrooms}
-                  onChange={(e) => setBathrooms(e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="sqft">Size (sqft)</label>
-                <input
-                  type="number"
-                  id="sqft"
-                  min="0"
-                  value={sqft}
-                  onChange={(e) => setSqft(e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="price">Price</label>
-                <input
-                  type="number"
-                  id="price"
-                  min="0"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="$"
-                />
-              </div>
-            </div>
-
-            {/* Address */}
-            <div className="form-group">
-              <label htmlFor="address">Address or Neighborhood</label>
-              <input
-                type="text"
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="e.g., 123 Main St, Austin TX or 'Downtown Seattle'"
-              />
-            </div>
-
-            {/* Features */}
-            <div className="form-group">
-              <label>Standout Features</label>
               <div className="features-grid">
                 {FEATURES.map(feature => (
                   <button
@@ -321,50 +340,56 @@ function App() {
               />
             </div>
 
-            {/* Additional Notes */}
-            <div className="form-group">
-              <label htmlFor="notes">Additional Notes</label>
-              <textarea
-                id="notes"
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
-                placeholder="Any special instructions or details for the AI..."
-                rows={3}
-              />
-            </div>
+            {/* Additional Info Section */}
+            <div className="form-section">
+              <div className="form-section-label">
+                <span className="form-section-icon">&#9998;</span>
+                Additional Info
+              </div>
 
-            {/* Image Upload */}
-            <div className="form-group">
-              <label>Property Photos (optional)</label>
-              <div
-                {...getRootProps()}
-                className={`dropzone ${isDragActive ? 'active' : ''} ${images.length >= 5 ? 'disabled' : ''}`}
-              >
-                <input {...getInputProps()} />
-                {images.length >= 5 ? (
-                  <p>Maximum 5 images reached</p>
-                ) : isDragActive ? (
-                  <p>Drop images here...</p>
-                ) : (
-                  <p>Drag & drop images here, or click to browse<br /><span className="dropzone-hint">JPG, PNG, WEBP - Max 5MB each</span></p>
+              <div className="form-group">
+                <label htmlFor="notes">Additional Notes</label>
+                <textarea
+                  id="notes"
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  placeholder="Any special instructions or details for the AI..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Property Photos (optional)</label>
+                <div
+                  {...getRootProps()}
+                  className={`dropzone ${isDragActive ? 'active' : ''} ${images.length >= 5 ? 'disabled' : ''}`}
+                >
+                  <input {...getInputProps()} />
+                  {images.length >= 5 ? (
+                    <p>Maximum 5 images reached</p>
+                  ) : isDragActive ? (
+                    <p>Drop images here...</p>
+                  ) : (
+                    <p>Drag & drop images here, or click to browse<br /><span className="dropzone-hint">JPG, PNG, WEBP - Max 5MB each</span></p>
+                  )}
+                </div>
+                {images.length > 0 && (
+                  <div className="image-previews">
+                    {images.map((img, index) => (
+                      <div key={index} className="image-preview">
+                        <img src={img.preview} alt={`Preview ${index + 1}`} />
+                        <button
+                          type="button"
+                          className="remove-image"
+                          onClick={() => removeImage(index)}
+                        >
+                          x
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-              {images.length > 0 && (
-                <div className="image-previews">
-                  {images.map((img, index) => (
-                    <div key={index} className="image-preview">
-                      <img src={img.preview} alt={`Preview ${index + 1}`} />
-                      <button
-                        type="button"
-                        className="remove-image"
-                        onClick={() => removeImage(index)}
-                      >
-                        x
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Generate Button */}
