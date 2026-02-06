@@ -44,7 +44,24 @@ def get_client():
 
 
 REFERENCE_EXAMPLES = """
-EXAMPLE 1 (Luxury Villa):
+EXAMPLE 1 (Grand Multi-Level Estate):
+This remarkable property spans three levels and blends exceptional proportions with flawless symmetry, creating a residence that truly stands out. The design, thoughtfully conceived, integrates beautifully with its surrounding landscape, offering breath-taking views of the majestic mountains beyond.
+
+The open-plan layout is central to the home's connection with nature, where large, concealed glass sliding doors and expansive windows seamlessly bring the outdoors in. Inside, minimalist luxury defines the space, with smooth screeded floors and elegant brass accents that give the interiors a sophisticated yet understated feel. Bespoke furnishings and carefully selected art pieces enhance the modern, contemporary atmosphere, all bathed in earthy tones of neutral greys and browns.
+
+On the ground floor, the grand double-volume entrance sets the tone for the entire home, with its striking blend of water features and meticulously landscaped hedges. From this entrance, large glass sliding doors open to a covered terrace that overlooks a beautifully manicured formal garden, a heated rim-flow pool, and, of course, stunning mountain views.
+
+The gourmet kitchen, designed with a central island, connects effortlessly to the informal lounge and a spacious dining area, celebrating the natural beauty that surrounds the home. This level also offers two additional lounges and a guest bedroom with an en suite bathroom, ensuring comfort and space for family and guests alike.
+
+Upstairs, twin staircases with sleek glass railings lead to five magnificent en suite bedrooms, each offering its own sense of serenity and style. The master suite, with its expansive mountain vistas, includes a private balcony and an open-air shower.
+
+The lower level features two en suite bedrooms that open directly to a plunge pool and a peaceful lily pond. Designed with ultimate luxury in mind, the lower level also boasts a spa room with a pedicure parlour, steam room, and Jacuzzi. For entertainment, there is a wine cellar, a poker room, and a cinema, while a central games room provides access to a high-tech gym and squash court.
+
+This home is designed with security as a top priority, featuring a guardhouse at the entrance for added protection. Advanced perimeter cameras are strategically placed around the property, providing continuous surveillance and ensuring peace of mind with round-the-clock security.
+
+Additional standout features include a roof terrace, a padel court, air conditioning throughout, smart control technology, and a dedicated scullery and laundry. The property also offers a two-bedroom staff quarters, a triple garage with additional parking for three more cars, and a system control room on the lower level. With solar panels, an inverter, and two boreholes, this home is designed with sustainability and convenience in mind.
+
+EXAMPLE 2 (Entertainment-Focused Luxury Home):
 As you enter this stunning home, you'll be greeted by an entertainment-focused level featuring an open-plan kitchen, dining area, and two lounge spaces. The entire area opens up to an outdoor oasis, complete with a sprawling L-shaped swimming pool and spectacular views, along with a braai area that includes a pizza oven and bar fridges — ideal for hosting guests.
 
 On the upper level, you'll find four bedrooms, each equipped with its own en-suite bathroom. The expansive main bedroom offers a spacious walk-in closet and a hidden panic room for added security. This level also includes a cozy pyjama lounge, perfect for family movie nights.
@@ -53,16 +70,68 @@ The lower level is designed for leisure, featuring a wine cellar, cinema, and gy
 
 Practical amenities like staff accommodations, a large laundry room, backup generators, and a water supply system ensure ultimate comfort and peace of mind.
 
-EXAMPLE 2 (Heritage Family Home):
+EXAMPLE 3 (Duplex Penthouse):
+Imagine a luxurious duplex penthouse that will leave you breathless. This extraordinary residence is inspired by the elegance and sophistication of a yacht. As you step into this magnificent space, you'll be greeted by international finishes that exude style and glamour. Double volume ceilings, imported and custom made furniture, double glazed windows, retractable roof over pool, inverters and back up generators with solar - just to name a few luxury details.
+
+The penthouse features five magnificent bedroom suites, each offering its own unique charm and comfort. The crown jewel of this opulent residence is the glamorous master bedroom, complete with a spacious walk-in dressing room.
+
+But the true showstopper of this penthouse lies upstairs, where you'll find a pool and jacuzzi that will transport you to a state of pure relaxation. The pool area is accompanied by a second kitchen and bar area, with braai area, a sauna and a full bathroom for guests to change. Perfect for hosting unforgettable gatherings.
+
+This home in the sky is filled with countless features that add to its allure, but they are too numerous to mention in just a few words. To truly appreciate the grandeur of this penthouse, it must be seen in person. Only then will you fully understand the splendor and magnificence that awaits within. Fully furnished. Unobstructed panoramic views.
+
+EXAMPLE 4 (New Development / Off-Plan):
+Introducing this exciting and exquisite new development yet to be built situated in sought after Clifton. A signature design by the world-renowned award-winning architects SAOTA, offering a magnificent Villa and Penthouse. Option to buy both or individually. With majestic views of the Twelve Apostles Mountain Range, Lions Head and all four Clifton's beaches, this Villa offers the discerning buyer a world-class experience of ultimate luxury and elegance.
+
+The double storey 635 sqm garden Villa featuring open plan designs allowing natural light to flow in through big glass windows. Four luxurious bedrooms, all en suite. A magnificent chef's kitchen with top of the range German appliances and separate scullery. The spacious living areas, lounge, dining and TV lounge flow seamlessly onto an expansive outdoor terrace and large garden complete with sparkling pool and a water feature. An opulent undercover parking garage offering four bays for each of the Villa and Penthouse with direct elevator access. State of the art fully integrated security.
+
+The second part of this development offers the spectacular Penthouse above, 3 bedrooms, 3 bathrooms with uninterrupted views and offers a lavish lifestyle. No expenses spared with ultra high-end finishes, finest materials such as glass and marble, and sparkling pool. Within walking distance to all four Clifton beaches as well as Camps Bay beaches and restaurants.
+
+EXAMPLE 5 (Heritage Cottage Renovation):
+The Annex Cottage at Greenways is a distinguished, standalone three-level residence within the esteemed Greenways Estate in Upper Claremont. Once part of the historic grounds of the iconic 1928 Manor House — originally inspired by Sir Herbert Baker and designed by Norman Lubynski.
+
+Currently undergoing an exceptional renovation, the cottage is being reimagined with refined, neutral interiors enhanced by warm wood flooring, classic black-and-white checkerboard accents, and elegant black aluminium colonial-barred windows and stacker doors that elevate its timeless aesthetic.
+
+The north-facing ground floor unfolds into a sophisticated open-plan living space encompassing the kitchen, dining area, and lounge. The kitchen will feature white Caesarstone countertops, a Smeg stove with gas hob and extractor, and a central island, while an adjoining scullery flows to a secluded courtyard. A double-sided wood-burning fireplace will softly delineate the dining and lounge areas, both opening through stacker doors to an undercover patio with built-in braai, a decked entertainment terrace, and a sparkling pool.
+
+This level also hosts a guest bathroom and an indulgent guest suite complete with a walk-in dressing room, private lounge, full ensuite, and direct access to the patio.
+
+Upstairs, a wood-finished landing leads to a magnificent master suite centred around a double-sided fireplace separating the bedroom from its private lounge. A walk-in dressing room, coffee station, and expansive full ensuite enhance the sense of luxury. Stacker doors open to an enclosed balcony, where additional stackers frame sweeping estate and mountain views.
+
+A second en-suite bedroom with built-in cupboards and a serene pyjama lounge completes the upper level.
+
+Positioned within a secure six-acre gated estate with 24-hour manned security, electric fencing, and comprehensive camera surveillance, the home offers both tranquillity and complete peace of mind.
+
+EXAMPLE 6 (Character Family Home):
 Located in a serene neighbourhood, this spacious three-level, five-bedroom family home exudes character and charm. Lovingly renovated, it seamlessly blends classic features with modern conveniences, offering a delightful living experience.
 
 Upon entering, you are greeted by a vintage tiled entrance that sets the tone for the entire house. The main level features wooden floors, high pressed ceilings, sash windows, American shutters, and exposed brick accent walls, creating a warm and inviting atmosphere. The neutral colour scheme enhances the vintage appeal while maintaining a modern aesthetic.
 
-The open plan lounge, dining room, and kitchen are bathed in natural light, thanks to its North-facing orientation. The lounge, featuring exposed brick walls and a cosy wood burner, opens onto an undercover patio overlooking a large garden dotted with mature trees and a swimming pool.
+The open plan lounge, dining room, and kitchen are bathed in natural light, thanks to its North-facing orientation. The lounge, featuring exposed brick walls and a cosy wood burner, opens onto an undercover patio overlooking a large garden dotted with mature trees and a swimming pool. Ideal for entertaining, the dining room extends outdoors via sliding doors to a paved side patio.
 
-The fully fitted kitchen is a chef's delight, boasting a concrete ceiling with steel lighting tracks, a large centre island topped with gleaming white Caesarstone, and high-end appliances including a Smeg double oven, gas hob, and extractor.
+The fully fitted kitchen is a chef's delight, boasting a concrete ceiling with steel lighting tracks, a large centre island topped with gleaming white Caesarstone, and high-end appliances including a Smeg double oven, gas hob, and extractor. A sunroom nook adds charm, while a walk-in pantry, scullery, and laundry room provide ample storage and utility space.
 
-EXAMPLE 3 (Apartment):
+The ground level also includes a study/work-from-home area with garden access, as well as a guest bathroom. Steps lead down to a self-contained flatlet complete with air conditioning, an open-plan lounge and kitchen with wooden floors, and an upstairs loft bedroom featuring exposed beams and an ensuite shower and bath — a perfect retreat for guests or extended family.
+
+An ornate staircase leads to a mid-level walk-in linen room. Further upstairs, a large, light-filled pyjama lounge with wooden floors features a spacious rectangular window, a study nook, and a balcony. Three double bedrooms, each equipped with climate control, 2 of which share a full family bathroom. The Master suite is a sanctuary with a charming reading nook, a Victorian fireplace, and a walk-in closet. The ensuite bathroom is luxurious, boasting his and hers Caesarstone vanities, a freestanding bath, and a shower.
+
+The loft level houses two additional bedrooms plus a large versatile loft space which could easily work as another bedroom — a perfect setup for growing families or hosting guests. Each of these bedrooms comes with climate control, and one of them enjoys its own ensuite shower.
+
+This home is equipped with modern amenities including an inverter with 2 batteries for backup power, staff accommodation with a separate entrance, a kitchen, and ensuite shower. Security features include an entrance intercom with a camera system, alarm system, security gates, and electric fencing. A double remote garage offers secure parking, while a borehole with automated irrigation and a water filtration system ensures sustainable water use.
+
+EXAMPLE 7 (Contemporary Renovated Home):
+Perfectly blending character-filled charm with luxurious contemporary finishes. Set on an expansive 833m2 erf in a peaceful cul-de-sac, this spacious 4-bedroom, 4-bathroom residence offers effortless comfort, style, and versatility.
+
+A breathtaking double-volume main suite crowns the upper level, featuring a wrap-around covered balcony with balau wood flooring and tranquil mountain and garden views. A walk-in dressing room and a stunning bespoke ensuite — with double vanity, bath, shower, and warm wood-look finishes — complete this private retreat.
+
+Downstairs, three additional bedrooms each offer their own appeal: one with an ensuite and adjoining office, another with a cosy wood-burning fireplace, and a third with its own ensuite. A fourth modern bathroom with a shower serves guests.
+
+The welcoming entrance flows into a family room with a fireplace and built-in shelving, leading to a beautifully renovated kitchen boasting black-and-white tiled floors, engineered marble-look countertops, a large stove with extractor, pantry, coffee station, and ample appliance space. Step down into the light-filled lounge and dining area with a closed-combustion fireplace, American shutters, and stack doors opening onto the lush, landscaped garden.
+
+Designed for seamless indoor-outdoor living and entertaining, the garden features a patio, pool, koi pond, and a versatile studio currently used as a gym. Additional highlights include excellent security (CCTV, alarm, beams), double carport, air-conditioning in the lounge and three bedrooms, water tanks, well point, water feature, and an inverter for uninterrupted power.
+
+Located within walking distance of Palmyra Junction, Cavendish, and transport links, and close to top Southern Suburbs schools, this exceptional home offers the perfect blend of luxury, convenience, and tranquillity.
+
+EXAMPLE 8 (Apartment):
 Located in the highly sought-after C Block of The Claremont, this generously sized apartment offers a perfect blend of comfort and convenience. Tucked away from the main road and the vibrant Claremont nightlife, it provides a peaceful retreat while remaining close to everything this bustling suburb has to offer.
 
 Ideal for first-time buyers, parents of students, or investors, this property is a standout in its category.
@@ -70,6 +139,8 @@ Ideal for first-time buyers, parents of students, or investors, this property is
 Upon entry, you're welcomed by an open-plan, fully-equipped kitchen that seamlessly flows into the living and dining area. Sliding doors lead to a private balcony, offering beautiful views — views that are also enjoyed from the master bedroom.
 
 The complex is just a short walk from key amenities, including Cavendish Square and the UCT Jammie Shuttle, making it a highly convenient location. Additionally, the 24-hour concierge security ensures peace of mind for all residents.
+
+This is an opportunity not to be missed. Contact us today to arrange a viewing and secure your new home or investment.
 """
 
 import re
@@ -242,7 +313,7 @@ def build_listing_prompt(
 ) -> str:
     """Build the prompt for generating the listing description."""
 
-    prompt = f"""You are an experienced South African luxury real estate agent writing a property listing description. Match the style and tone of the reference examples below exactly.
+    prompt = f"""You are an experienced luxury real estate agent writing a property listing description. Match the style and tone of the reference examples below exactly. Adapt your language and terminology to suit the property's location — use locally appropriate terms, currency references, and cultural context while maintaining the same sophisticated writing style.
 
 REFERENCE EXAMPLES (match this writing style):
 {REFERENCE_EXAMPLES}
