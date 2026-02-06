@@ -1,58 +1,36 @@
 """
-AI Writing Assistant API
-========================
-This is a FastAPI backend that connects to Claude (Anthropic's AI) to provide
-writing assistance. It supports both regular and streaming responses.
-
-KEY CONCEPTS FOR LEARNERS:
-- FastAPI: A modern Python web framework for building APIs
-- Streaming: Sending data piece-by-piece instead of all at once
-- CORS: Security feature that controls which websites can call your API
-- Environment Variables: Secret values stored outside your code
+Real Estate Listing Assistant API
+=================================
+Generates professional real estate listing descriptions using Claude AI.
+Supports image analysis and neighborhood lookup.
 """
 
-# ============================================================================
-# IMPORTS - These are libraries we need
-# ============================================================================
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import anthropic
 import os
+import base64
+import json
 from dotenv import load_dotenv
+from typing import Optional, List
 
-# Load environment variables from .env file (for local development)
 load_dotenv()
 
-# ============================================================================
-# APP SETUP
-# ============================================================================
-
-# Create the FastAPI application
-# Think of this as creating your "server" that will handle requests
 app = FastAPI(
-    title="AI Writing Assistant",
-    description="An API that uses Claude to help with writing tasks",
-    version="1.0.0"
+    title="Real Estate Listing Assistant",
+    description="AI-powered real estate listing description generator",
+    version="2.0.0"
 )
 
-# CORS Middleware Setup
-# ---------------------
-# CORS (Cross-Origin Resource Sharing) is a security feature.
-# Without this, your React frontend (running on a different URL)
-# wouldn't be able to call your API.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for now
-    allow_credentials=False,  # Must be False when using wildcard origins
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Initialize the Anthropic client lazily
-# This connects to Claude's API using your API key
 _client = None
 
 def get_client():
@@ -64,211 +42,446 @@ def get_client():
         _client = anthropic.Anthropic(api_key=api_key)
     return _client
 
-# ============================================================================
-# DATA MODELS (using Pydantic)
-# ============================================================================
 
-# Pydantic models define the shape of data your API accepts/returns
-# Think of them as "contracts" for your data
+REFERENCE_EXAMPLES = """
+EXAMPLE 1 (Luxury Villa):
+As you enter this stunning home, you'll be greeted by an entertainment-focused level featuring an open-plan kitchen, dining area, and two lounge spaces. The entire area opens up to an outdoor oasis, complete with a sprawling L-shaped swimming pool and spectacular views, along with a braai area that includes a pizza oven and bar fridges — ideal for hosting guests.
 
-class WritingRequest(BaseModel):
-    """
-    This defines what data the client must send when making a request.
-    
-    Example JSON that matches this model:
-    {
-        "prompt": "Write a blog post about Python",
-        "writing_type": "blog_post",
-        "tone": "professional"
-    }
-    """
-    prompt: str                          # Required: The user's writing request
-    writing_type: str = "general"        # Optional: Type of writing (has default)
-    tone: str = "professional"           # Optional: Writing tone (has default)
+On the upper level, you'll find four bedrooms, each equipped with its own en-suite bathroom. The expansive main bedroom offers a spacious walk-in closet and a hidden panic room for added security. This level also includes a cozy pyjama lounge, perfect for family movie nights.
+
+The lower level is designed for leisure, featuring a wine cellar, cinema, and gym. A lift provides easy access to all floors, alongside four garage spaces and a security guard room at the entrance.
+
+Practical amenities like staff accommodations, a large laundry room, backup generators, and a water supply system ensure ultimate comfort and peace of mind.
+
+EXAMPLE 2 (Heritage Family Home):
+Located in a serene neighbourhood, this spacious three-level, five-bedroom family home exudes character and charm. Lovingly renovated, it seamlessly blends classic features with modern conveniences, offering a delightful living experience.
+
+Upon entering, you are greeted by a vintage tiled entrance that sets the tone for the entire house. The main level features wooden floors, high pressed ceilings, sash windows, American shutters, and exposed brick accent walls, creating a warm and inviting atmosphere. The neutral colour scheme enhances the vintage appeal while maintaining a modern aesthetic.
+
+The open plan lounge, dining room, and kitchen are bathed in natural light, thanks to its North-facing orientation. The lounge, featuring exposed brick walls and a cosy wood burner, opens onto an undercover patio overlooking a large garden dotted with mature trees and a swimming pool.
+
+The fully fitted kitchen is a chef's delight, boasting a concrete ceiling with steel lighting tracks, a large centre island topped with gleaming white Caesarstone, and high-end appliances including a Smeg double oven, gas hob, and extractor.
+
+EXAMPLE 3 (Apartment):
+Located in the highly sought-after C Block of The Claremont, this generously sized apartment offers a perfect blend of comfort and convenience. Tucked away from the main road and the vibrant Claremont nightlife, it provides a peaceful retreat while remaining close to everything this bustling suburb has to offer.
+
+Ideal for first-time buyers, parents of students, or investors, this property is a standout in its category.
+
+Upon entry, you're welcomed by an open-plan, fully-equipped kitchen that seamlessly flows into the living and dining area. Sliding doors lead to a private balcony, offering beautiful views — views that are also enjoyed from the master bedroom.
+
+The complex is just a short walk from key amenities, including Cavendish Square and the UCT Jammie Shuttle, making it a highly convenient location. Additionally, the 24-hour concierge security ensures peace of mind for all residents.
+"""
+
+import re
+
+def clean_listing_output(text: str) -> str:
+    """Remove any bold markdown, headlines, or price mentions the AI may have added."""
+    # Remove markdown bold markers
+    text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
+    # Remove lines that look like standalone headlines (short lines ending with no period at the start)
+    lines = text.strip().split('\n')
+    # If the first non-empty line looks like a headline (short, no period, often title-cased), remove it
+    while lines:
+        first = lines[0].strip()
+        if not first:
+            lines.pop(0)
+            continue
+        # Headline heuristics: short line (under 100 chars), no period at end, or wrapped in quotes
+        is_headline = (
+            len(first) < 120
+            and not first.endswith('.')
+            and not first.endswith(',')
+            and '\n' not in first
+            and first.count(' ') < 20
+        )
+        if is_headline:
+            lines.pop(0)
+            # Also remove any blank line after the headline
+            while lines and not lines[0].strip():
+                lines.pop(0)
+        else:
+            break
+    return '\n'.join(lines).strip()
 
 
-class WritingResponse(BaseModel):
-    """This defines the shape of our API's response."""
-    content: str      # The generated text
-    model: str        # Which AI model was used
-    usage: dict       # Token usage information
+PROPERTY_TYPE_NAMES = {
+    "house": "home",
+    "condo": "condo",
+    "townhouse": "townhouse",
+    "land": "property"
+}
 
 
-# ============================================================================
-# HELPER FUNCTIONS
-# ============================================================================
+def build_property_context(
+    property_type: str,
+    listing_purpose: str,
+    bedrooms: str,
+    bathrooms: str,
+    sqft: str,
+    price: str,
+    address: str,
+    features: List[str],
+    additional_notes: str
+) -> str:
+    """Build a context string from property details."""
+    parts = []
 
-def build_system_prompt(writing_type: str, tone: str) -> str:
-    """
-    Creates a system prompt that tells Claude how to behave.
-    
-    System prompts are like giving instructions to Claude before the
-    conversation starts. They shape how Claude responds.
-    """
-    return f"""You are an expert writing assistant. Your task is to help users 
-with their writing needs.
+    prop_name = PROPERTY_TYPE_NAMES.get(property_type, "property")
+    purpose = "for sale" if listing_purpose == "sale" else "for rent"
+    parts.append(f"Property Type: {prop_name.title()} {purpose}")
 
-Writing Type: {writing_type}
-Tone: {tone}
+    if bedrooms:
+        parts.append(f"Bedrooms: {bedrooms}")
+    if bathrooms:
+        parts.append(f"Bathrooms: {bathrooms}")
+    if sqft:
+        parts.append(f"Square Footage: {sqft} sqft")
+    if price:
+        price_formatted = f"${int(price):,}" if price.isdigit() else f"${price}"
+        if listing_purpose == "rent":
+            parts.append(f"Monthly Rent: {price_formatted}")
+        else:
+            parts.append(f"Price: {price_formatted}")
+    if address:
+        parts.append(f"Location: {address}")
+    if features:
+        parts.append(f"Features: {', '.join(features)}")
+    if additional_notes:
+        parts.append(f"Additional Notes: {additional_notes}")
 
-Guidelines:
-- Produce high-quality, engaging content
-- Match the requested tone and style
-- Be creative while staying on topic
-- Format the output appropriately for the writing type
-- If writing code examples, use proper formatting"""
+    return "\n".join(parts)
 
 
-# ============================================================================
-# API ENDPOINTS (Routes)
-# ============================================================================
+async def analyze_images(images: List[UploadFile]) -> str:
+    """Analyze property images using Claude Vision."""
+    if not images:
+        return ""
+
+    client = get_client()
+    image_contents = []
+
+    for img in images:
+        content = await img.read()
+        await img.seek(0)
+
+        # Determine media type
+        content_type = img.content_type or "image/jpeg"
+        if content_type not in ["image/jpeg", "image/png", "image/webp", "image/gif"]:
+            content_type = "image/jpeg"
+
+        base64_image = base64.standard_b64encode(content).decode("utf-8")
+        image_contents.append({
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": content_type,
+                "data": base64_image
+            }
+        })
+
+    image_contents.append({
+        "type": "text",
+        "text": """Analyze these real estate property images. For each notable observation, describe:
+- Architectural style and condition
+- Interior finishes and design elements
+- Natural light and ambiance
+- Notable visual features (views, unique elements)
+- Outdoor spaces if visible
+- Overall vibe/feeling
+
+Be specific but concise. Only describe what you can actually see. Format as a brief paragraph."""
+    })
+
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=500,
+            messages=[{"role": "user", "content": image_contents}]
+        )
+        return response.content[0].text
+    except Exception as e:
+        print(f"Image analysis error: {e}")
+        return ""
+
+
+async def lookup_neighborhood(address: str) -> str:
+    """Perform web search for neighborhood information."""
+    if not address or len(address.strip()) < 3:
+        return ""
+
+    client = get_client()
+
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=400,
+            messages=[{
+                "role": "user",
+                "content": f"""Based on your knowledge, provide a brief 2-3 sentence description of the neighborhood/area: {address}
+
+Include relevant details about:
+- Nearby amenities (restaurants, shopping, parks)
+- Schools if it's a residential area
+- General character and vibe of the neighborhood
+- Transit or accessibility
+
+Keep it factual and useful for a real estate listing. If you're not confident about specific details for this location, provide general information about the type of area it appears to be."""
+            }]
+        )
+        return response.content[0].text
+    except Exception as e:
+        print(f"Neighborhood lookup error: {e}")
+        return ""
+
+
+def build_listing_prompt(
+    property_context: str,
+    image_analysis: str,
+    neighborhood_info: str,
+    listing_purpose: str
+) -> str:
+    """Build the prompt for generating the listing description."""
+
+    prompt = f"""You are an experienced South African luxury real estate agent writing a property listing description. Match the style and tone of the reference examples below exactly.
+
+REFERENCE EXAMPLES (match this writing style):
+{REFERENCE_EXAMPLES}
+
+CRITICAL RULES (you must follow these exactly):
+- NEVER include a headline, title, or bold text. Start the first sentence directly with the property description.
+- NEVER mention the price or any monetary amount anywhere in the description.
+- NEVER use emoji.
+- NEVER use bullet points or numbered lists.
+- NEVER use markdown formatting (no **, no ##, no *).
+
+STYLE RULES:
+- Write in a sophisticated, descriptive narrative style as shown in the examples
+- Walk through the property logically: entrance → main living areas → kitchen → bedrooms → outdoor/entertainment → practical amenities
+- Weave features into flowing prose paragraphs
+- Use elegant, aspirational language: "magnificent", "bespoke", "seamlessly flows", "exudes character"
+- Scale the description length to match the property — longer for large luxury homes, shorter for apartments
+- Reference specific finishes, materials, and design elements where provided
+- End with practical amenities (security, parking, power backup) or a brief call to action
+- {"Focus on rental appeal and lifestyle convenience" if listing_purpose == "rent" else "Focus on ownership appeal and investment value"}
+- Never invent features not mentioned in the property details
+
+PROPERTY DETAILS:
+{property_context}
+
+"""
+
+    if image_analysis:
+        prompt += f"""VISUAL DETAILS FROM PHOTOS:
+{image_analysis}
+
+"""
+
+    if neighborhood_info:
+        prompt += f"""NEIGHBORHOOD CONTEXT:
+{neighborhood_info}
+
+"""
+
+    prompt += """Now write the listing description for this property, matching the reference style exactly. Remember: NO headline, NO bold text, NO price, NO emoji, NO markdown. Start directly with the first descriptive sentence."""
+
+    return prompt
+
+
+def build_social_prompt(
+    property_context: str,
+    image_analysis: str,
+    listing_purpose: str
+) -> str:
+    """Build the prompt for generating the social media caption."""
+
+    prompt = f"""You are a luxury real estate agent creating an Instagram/social media post for a property listing.
+
+PROPERTY DETAILS:
+{property_context}
+
+"""
+
+    if image_analysis:
+        prompt += f"""VISUAL DETAILS FROM PHOTOS:
+{image_analysis}
+
+"""
+
+    prompt += f"""INSTRUCTIONS:
+1. Write a social media caption (50-80 words)
+2. Use a sophisticated yet approachable tone — match the elegance of a luxury property brand
+3. Highlight the most compelling 2-3 features
+4. End with 3-5 relevant hashtags
+5. {"Use rental-focused language" if listing_purpose == "rent" else "Use buyer-focused language"}
+6. Keep emoji minimal — 1-2 max if any
+7. Do NOT mention the price
+
+Write only the caption with hashtags, no extra formatting."""
+
+    return prompt
+
 
 @app.get("/")
 async def root():
-    """
-    Root endpoint - just confirms the API is running.
-    
-    GET request to: http://your-api.com/
-    Returns: A welcome message
-    """
     return {
-        "message": "Welcome to the AI Writing Assistant API!",
-        "docs": "/docs",  # FastAPI auto-generates documentation here
+        "message": "Real Estate Listing Assistant API",
+        "docs": "/docs",
         "endpoints": {
-            "/generate": "POST - Generate content (regular response)",
-            "/generate/stream": "POST - Generate content (streaming response)"
+            "/generate-listing": "POST - Generate full listing + social caption",
+            "/regenerate-section": "POST - Regenerate a specific section"
         }
     }
 
 
 @app.get("/health")
 async def health_check():
-    """
-    Health check endpoint - used by deployment platforms to verify the app is alive.
-    
-    Railway/Render will ping this endpoint to check if your server is healthy.
-    """
     return {"status": "healthy"}
 
 
-@app.post("/generate", response_model=WritingResponse)
-async def generate_content(request: WritingRequest):
-    """
-    Generate writing content (non-streaming).
-    
-    HOW IT WORKS:
-    1. Client sends a POST request with WritingRequest data
-    2. We call Claude's API and wait for the COMPLETE response
-    3. We return the full response at once
-    
-    WHEN TO USE:
-    - When you need the complete response before doing anything
-    - For shorter content where waiting is acceptable
-    """
+@app.post("/generate-listing")
+async def generate_listing(
+    property_type: str = Form(...),
+    listing_purpose: str = Form("sale"),
+    bedrooms: str = Form(""),
+    bathrooms: str = Form(""),
+    sqft: str = Form(""),
+    price: str = Form(""),
+    address: str = Form(""),
+    features: str = Form("[]"),
+    additional_notes: str = Form(""),
+    images: List[UploadFile] = File(default=[])
+):
+    """Generate a complete listing with description and social caption."""
     try:
-        # Call Claude's API
-        message = get_client().messages.create(
-            model="claude-sonnet-4-20250514",  # The AI model to use
-            max_tokens=1024,                        # Maximum response length
-            system=build_system_prompt(request.writing_type, request.tone),
-            messages=[
-                {
-                    "role": "user",
-                    "content": request.prompt
-                }
-            ]
-        )
-        
-        # Return the response
-        return WritingResponse(
-            content=message.content[0].text,
-            model=message.model,
-            usage={
-                "input_tokens": message.usage.input_tokens,
-                "output_tokens": message.usage.output_tokens
-            }
-        )
-        
-    except anthropic.APIError as e:
-        # Handle API errors (bad key, rate limits, etc.)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Claude API error: {str(e)}"
-        )
-
-
-@app.post("/generate/stream")
-async def generate_content_stream(request: WritingRequest):
-    """
-    Generate writing content with STREAMING.
-    
-    HOW STREAMING WORKS:
-    1. Client sends a POST request
-    2. Instead of waiting for the complete response, we send data 
-       piece-by-piece as Claude generates it
-    3. Client sees text appear word-by-word (like ChatGPT does!)
-    
-    WHY USE STREAMING:
-    - Better user experience (users see progress immediately)
-    - Feels faster even though total time is similar
-    - Essential for longer content generation
-    
-    TECHNICAL DETAILS:
-    - Uses Server-Sent Events (SSE) format
-    - Each chunk is sent as: "data: {text}\n\n"
-    - Stream ends with: "data: [DONE]\n\n"
-    """
-    
-    async def generate():
-        """
-        This is a generator function (note the 'yield' keyword).
-        It produces data piece-by-piece instead of all at once.
-        """
+        # Parse features JSON
         try:
-            # Create a streaming request to Claude
-            with get_client().messages.stream(
-                model="claude-sonnet-4-20250514",
-                max_tokens=1024,
-                system=build_system_prompt(request.writing_type, request.tone),
-                messages=[
-                    {
-                        "role": "user", 
-                        "content": request.prompt
-                    }
-                ]
-            ) as stream:
-                # Loop through each piece of text as it's generated
-                for text in stream.text_stream:
-                    # 'yield' sends this chunk to the client immediately
-                    # Format: Server-Sent Events (SSE)
-                    yield f"data: {text}\n\n"
-            
-            # Signal that we're done
-            yield "data: [DONE]\n\n"
-            
-        except anthropic.APIError as e:
-            # Send error in the stream
-            yield f"data: [ERROR] {str(e)}\n\n"
-    
-    # Return a streaming response
-    return StreamingResponse(
-        generate(),
-        media_type="text/event-stream",  # This tells the browser it's a stream
-        headers={
-            "Cache-Control": "no-cache",      # Don't cache this response
-            "Connection": "keep-alive",        # Keep the connection open
-            "X-Accel-Buffering": "no"          # Disable nginx buffering
+            features_list = json.loads(features)
+        except json.JSONDecodeError:
+            features_list = []
+
+        # Build property context
+        property_context = build_property_context(
+            property_type, listing_purpose, bedrooms, bathrooms,
+            sqft, price, address, features_list, additional_notes
+        )
+
+        # Analyze images if provided
+        image_analysis = ""
+        if images and len(images) > 0 and images[0].filename:
+            image_analysis = await analyze_images(images)
+
+        # Lookup neighborhood if address provided
+        neighborhood_info = ""
+        if address:
+            neighborhood_info = await lookup_neighborhood(address)
+
+        # Generate listing description
+        client = get_client()
+
+        listing_prompt = build_listing_prompt(
+            property_context, image_analysis, neighborhood_info, listing_purpose
+        )
+
+        description_response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=2048,
+            messages=[{"role": "user", "content": listing_prompt}]
+        )
+        description = clean_listing_output(description_response.content[0].text)
+
+        # Generate social caption
+        social_prompt = build_social_prompt(
+            property_context, image_analysis, listing_purpose
+        )
+
+        social_response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=300,
+            messages=[{"role": "user", "content": social_prompt}]
+        )
+        social_caption = social_response.content[0].text
+
+        return {
+            "description": description,
+            "social_caption": social_caption
         }
-    )
+
+    except anthropic.APIError as e:
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating listing: {str(e)}")
 
 
-# ============================================================================
-# RUN THE SERVER (for local development)
-# ============================================================================
+@app.post("/regenerate-section")
+async def regenerate_section(
+    section: str = Form(...),
+    property_type: str = Form(...),
+    listing_purpose: str = Form("sale"),
+    bedrooms: str = Form(""),
+    bathrooms: str = Form(""),
+    sqft: str = Form(""),
+    price: str = Form(""),
+    address: str = Form(""),
+    features: str = Form("[]"),
+    additional_notes: str = Form(""),
+    images: List[UploadFile] = File(default=[])
+):
+    """Regenerate a specific section (description or social)."""
+    try:
+        # Parse features JSON
+        try:
+            features_list = json.loads(features)
+        except json.JSONDecodeError:
+            features_list = []
+
+        # Build property context
+        property_context = build_property_context(
+            property_type, listing_purpose, bedrooms, bathrooms,
+            sqft, price, address, features_list, additional_notes
+        )
+
+        # Analyze images if provided
+        image_analysis = ""
+        if images and len(images) > 0 and images[0].filename:
+            image_analysis = await analyze_images(images)
+
+        client = get_client()
+
+        if section == "description":
+            # Lookup neighborhood for description
+            neighborhood_info = ""
+            if address:
+                neighborhood_info = await lookup_neighborhood(address)
+
+            prompt = build_listing_prompt(
+                property_context, image_analysis, neighborhood_info, listing_purpose
+            )
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=2048,
+                messages=[{"role": "user", "content": prompt}]
+            )
+        else:
+            prompt = build_social_prompt(
+                property_context, image_analysis, listing_purpose
+            )
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=300,
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+        content = response.content[0].text
+        if section == "description":
+            content = clean_listing_output(content)
+        return {"content": content}
+
+    except anthropic.APIError as e:
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error regenerating: {str(e)}")
+
 
 if __name__ == "__main__":
     import uvicorn
-    # Uvicorn is an ASGI server that runs our FastAPI app
-    # host="0.0.0.0" makes it accessible from other devices on your network
-    # port=8000 is the standard development port
     uvicorn.run(app, host="0.0.0.0", port=8000)
